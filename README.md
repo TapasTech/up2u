@@ -1,6 +1,6 @@
 # up2u
 
-> Up to you
+> Up to you, an interactive news dispatcher
 
 ## Build Setup
 
