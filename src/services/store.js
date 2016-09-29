@@ -1,3 +1,5 @@
+import {nodes} from './nodes';
+
 export default {
-  items: [],
+  nodes,
 };

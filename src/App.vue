@@ -7,13 +7,11 @@
 <script>
 import Messages from 'src/components/Messages';
 import store from 'src/services/store';
-import {root, getNext} from 'src/services/nodes';
+import {root, processNode} from 'src/services/nodes';
+import {delay} from 'src/utils';
 
-setTimeout(() => {
-  store.items.push(root);
-  getNext(root).then(node => store.items.push(node));
-}, 2000);
-console.log(store);
+delay(2000)
+.then(() => processNode(root));
 
 export default {
   data () {
@@ -28,9 +26,11 @@ export default {
 </script>
 
 <style lang="less">
+@import '~normalize.css';
 body {
   font-family: Helvetica, sans-serif;
   font-size: 14px;
+  background: #eee;
 }
 #app {
   padding: 1rem;
@@ -38,54 +38,8 @@ body {
 .item {
   display: block;
   position: relative;
-  text-align: left;
-  @arrow-width: .8rem;
-  @arrow-height: .4rem;
-  @arrow-stroke: black;
-  @arrow-fill: white;
-  .item-arrow {
-    &, & > i {
-      border-top: @arrow-height solid transparent;
-      border-bottom: @arrow-height solid transparent;
-      border-right: @arrow-width solid;
-      border-left: 0;
-    }
-    position: absolute;
-    top: 50%;
-    transform: translate(-100%,-50%);
-    border-right-color: @arrow-stroke;
-    & > i {
-      position: absolute;
-      left: 2px;
-      top: -@arrow-height;
-      border-right-color: @arrow-fill;
-    }
-  }
-  &-user {
-    text-align: right;
-    .item-arrow {
-      &, & > i {
-        border-right: 0;
-        border-left: @arrow-width solid;
-      }
-      right: 0;
-      transform: translate(100%,-50%);
-      border-left-color: @arrow-stroke;
-      & > i {
-        left: auto;
-        right: 2px;
-        border-left-color: @arrow-fill;
-      }
-    }
-  }
-}
-.item-container {
-  display: inline-block;
-  max-width: 80%;
-  padding: .5rem 1rem;
-  text-align: justify;
-  background: white;
-  border: 1px solid;
-  border-radius: .5rem;
+  margin-bottom: 1rem;
+  text-decoration: none;
+  color: #333;
 }
 </style>

@@ -1,19 +1,23 @@
 <template>
   <div class="messages">
-    <item v-for="item in items" :node="item"></item>
+    <component v-for="item in nodes" :is="`${item.type}-item`" :node="item"></component>
   </div>
 </template>
 
 <script>
 import store from 'src/services/store';
-import Item from './Item';
+import LinkItem from './LinkItem';
+import TextItem from './TextItem';
+import ChoicesItem from './ChoicesItem';
 
 export default {
   data() {
     return store;
   },
   components: {
-    Item,
+    LinkItem,
+    TextItem,
+    ChoicesItem,
   },
 };
 </script>
