@@ -7,11 +7,10 @@
 <script>
 import Messages from 'src/components/Messages';
 import store from 'src/services/store';
-import {root, processNode} from 'src/services/nodes';
+import {getNode, processNode} from 'src/services/nodes';
 import {delay} from 'src/utils';
 
-delay(2000)
-.then(() => processNode(root));
+getNode(1).then(processNode);
 
 export default {
   data () {

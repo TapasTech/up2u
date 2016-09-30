@@ -1,70 +1,17 @@
 import {delay} from 'src/utils';
+import nodeMap from './mock';
 
 export const nodes = [];
-const nodeMap = {};
-
-const types = {
-  TEXT: 'text',
-  LINK: 'link',
-  CHOICES: 'choices',
-  CHOICE: 'choice',
-  TRANSITION: 'transition',
-};
-
-export const root = {
-  id: 1,
-  type: types.TEXT,
-  content: 'Hi there!',
-  style: {
-    color: 'blue',
-    background: 'golden',
-  },
-  next: 2,
-};
-nodeMap[1] = root;
-nodeMap[2] = {
-  id: 2,
-  type: types.LINK,
-  content: 'Welcome to DTCJ',
-  link: 'http://xxx.dtcj.com:23333/',
-  next: 8,
-};
-nodeMap[8] = {
-  id: 8,
-  type: types.TEXT,
-  content: 'Do you like it?',
-  next: 3,
-};
-nodeMap[3] = {
-  id: 3,
-  type: types.CHOICES,
-  // content: 'Do you like it?',
-  children: [4, 5],
-};
-nodeMap[4] = {
-  id: 4,
-  type: types.CHOICE,
-  title: 'Yes',
-  content: 'Yes, I like it.',
-  next: 6,
-};
-nodeMap[5] = {
-  id: 5,
-  type: types.CHOICE,
-  title: 'No',
-  content: 'No, show me something else.',
-  next: 7,
-};
-nodeMap[6] = {
-  id: 6,
-  type: types.TEXT,
-  content: 'OK, thank you.',
-};
-nodeMap[7] = {
-  id: 7,
-  type: types.TEXT,
-  content: 'There is nothing else. You have to like it.'
-};
+const supportedTypes = [
+  'text',
+  'link',
+  'choices',
+  'choice',
+];
+const types = supportedTypes.reduce((res, item) => {
+  res[item] = item;
+  return res;
+}, {});
 
 const getId = function () {
   var id = 0;
@@ -72,9 +19,9 @@ const getId = function () {
 }();
 
 export function addNode(node) {
-  node.type = node.type || types.TEXT;
-  if (node.type === types.CHOICE) {
-    node.type = types.TEXT;
+  node.type = node.type || types.text;
+  if (node.type === types.choice) {
+    node.type = types.text;
     node.className = 'item-user';
   }
   node.id = node.id || getId();
