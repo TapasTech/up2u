@@ -1,9 +1,12 @@
 <template>
   <div class="item-choices">
-    <div class="item-hint" v-text="node.content"></div>
-    <div class="item-container">
-      <div class="item-choice" v-for="choice in children"
-      v-text="choice.title" @click="pick(choice)"></div>
+    <div class="item-response">
+      <div class="item-hint" v-text="node.content"></div>
+      <div class="item-choice-wrap">
+        <div class="item-container item-user"
+        v-for="(choice,index) in children" ref="choices"
+        v-text="choice.title" @click="pick(choice,index)"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -20,13 +23,25 @@ export default {
     };
   },
   methods: {
-    pick(choice) {
+    pick(choice, index) {
+      const el = this.$refs.choices[index];
+      const source = {
+        html: el.innerHTML,
+        className: el.className,
+        rect: el.getBoundingClientRect(),
+      };
       popNode(this.node)
       .then(() => {
         const {content} = this.node;
         return content && addNode({content});
       })
-      .then(() => processNode(choice));
+      .then(() => {
+        const toNode = Object.assign({
+          from: source,
+        }, choice);
+        processNode(toNode);
+        return toNode;
+      });
     },
   },
   created() {
@@ -50,14 +65,7 @@ export default {
   font-size: 1.2rem;
 }
 .item-container {
-  text-align: center;
-}
-.item-choice {
-  display: inline-block;
   margin: 1rem;
-  padding: .5rem 1rem;
-  background: #ccf;
   cursor: pointer;
-  border-radius: 1rem;
 }
 </style>

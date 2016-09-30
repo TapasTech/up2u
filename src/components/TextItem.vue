@@ -1,9 +1,6 @@
 <template>
-  <div class="item" :class="node.className">
-    <div class="item-container" v-html="node.content"></div>
-    <div class="item-arrow">
-      <i></i>
-    </div>
+  <div class="item" :class="className">
+    <div class="item-container" v-html="node.content" ref="el"></div>
   </div>
 </template>
 
@@ -11,65 +8,59 @@
 export default {
   props: ['node', 'loading'],
   data() {
-    return {};
+    return {
+      hide: !!this.node.from,
+    };
+  },
+  computed: {
+    className() {
+      const names = [];
+      this.node.className && names.push(this.node.className);
+      this.hide && names.push('item-hide');
+      return names.join(' ');
+    },
   },
   mounted() {
-    console.log(this);
+    const source = this.node.from;
+    if (source) {
+      const el = document.createElement('div');
+      el.innerHTML = source.html;
+      el.className = source.className;
+      this.setStyles(el, {
+        position: 'absolute',
+        left: source.rect.left + 'px',
+        top: source.rect.top + 'px',
+        width: source.rect.width + 'px',
+        height: source.rect.height + 'px',
+      });
+      this.$el.parentNode.appendChild(el);
+      this.$nextTick(() => {
+        const rect = this.$refs.el.getBoundingClientRect();
+        this.setStyles(el, {
+          position: 'absolute',
+          transition: '.5s',
+          left: rect.left + 'px',
+          top: rect.top + 'px',
+          width: rect.width + 'px',
+          height: rect.height + 'px',
+        });
+        setTimeout(() => {
+          el.remove();
+          this.hide = false;
+        }, 500);
+      });
+    }
+  },
+  methods: {
+    setStyles(el, styles) {
+      const style = Object.keys(styles)
+      .map(key => `${key}:${styles[key]}`)
+      .join(';');
+      el.setAttribute('style', style);
+    },
   },
 }
 </script>
 
 <style lang="less" scoped>
-@color-border: #233;
-@color-back: white;
-@color-text: #333;
-@arrow-width: .6rem;
-@arrow-height: .4rem;
-@arrow-stroke: @color-border;
-@arrow-fill: @color-back;
-.item-container {
-  display: inline-block;
-  max-width: 80%;
-  padding: .5rem 1rem;
-  text-align: justify;
-  background: @color-back;
-  border: 1px solid @color-border;
-  border-radius: .5rem;
-  color: @color-text;
-}
-.item-arrow {
-  &, & > i {
-    border-top: @arrow-height solid transparent;
-    border-bottom: @arrow-height solid transparent;
-    border-right: @arrow-width solid;
-    border-left: 0;
-  }
-  position: absolute;
-  top: 50%;
-  transform: translate(-100%,-50%);
-  border-right-color: @arrow-stroke;
-  & > i {
-    position: absolute;
-    left: 2px;
-    top: -@arrow-height;
-    border-right-color: @arrow-fill;
-  }
-}
-.item-user {
-  text-align: right;
-  .item-arrow {
-    &, & > i {
-      border-right: 0;
-      border-left: @arrow-width solid;
-    }
-    right: 0;
-    transform: translate(100%,-50%);
-    border-left-color: @arrow-stroke;
-    & > i {
-      left: auto;
-      right: 2px;
-      border-left-color: @arrow-fill;
-    }
-  }
-}
 </style>

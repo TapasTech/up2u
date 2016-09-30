@@ -8,6 +8,7 @@ const types = {
   LINK: 'link',
   CHOICES: 'choices',
   CHOICE: 'choice',
+  TRANSITION: 'transition',
 };
 
 export const root = {
@@ -24,15 +25,20 @@ nodeMap[1] = root;
 nodeMap[2] = {
   id: 2,
   type: types.LINK,
-  className: 'item-user',
   content: 'Welcome to DTCJ',
   link: 'http://xxx.dtcj.com:23333/',
+  next: 8,
+};
+nodeMap[8] = {
+  id: 8,
+  type: types.TEXT,
+  content: 'Do you like it?',
   next: 3,
 };
 nodeMap[3] = {
   id: 3,
   type: types.CHOICES,
-  content: 'Do you like it?',
+  // content: 'Do you like it?',
   children: [4, 5],
 };
 nodeMap[4] = {
@@ -60,12 +66,18 @@ nodeMap[7] = {
   content: 'There is nothing else. You have to like it.'
 };
 
+const getId = function () {
+  var id = 0;
+  return () => `_node_${++ id}`;
+}();
+
 export function addNode(node) {
   node.type = node.type || types.TEXT;
   if (node.type === types.CHOICE) {
     node.type = types.TEXT;
     node.className = 'item-user';
   }
+  node.id = node.id || getId();
   nodes.push(node);
   return node;
 }
