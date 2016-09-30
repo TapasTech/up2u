@@ -44,11 +44,6 @@ module.exports = {
     noInfo: true
   },
   devtool: '#eval-source-map',
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: 'public/index.html',
-    }),
-  ],
 }
 
 if (process.env.NODE_ENV === 'production') {
@@ -64,6 +59,23 @@ if (process.env.NODE_ENV === 'production') {
       compress: {
         warnings: false
       }
-    })
+    }),
+    new HtmlWebpackPlugin({
+      production: true,
+      template: 'public/index.html',
+      inject: true,
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: true
+      },
+      chunksSortMode: 'dependency'
+    }),
   ])
+} else {
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new HtmlWebpackPlugin({
+      template: 'public/index.html',
+    }),
+  ]);
 }
