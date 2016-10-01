@@ -14,10 +14,7 @@ export default {
   data() {
     return {};
   },
-  mounted() {
-    console.log(this);
-  },
-}
+};
 </script>
 
 <style lang="less" scoped>

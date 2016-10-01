@@ -6,9 +6,7 @@
 
 <script>
 import Messages from 'src/components/Messages';
-import store from 'src/services/store';
 import {getNode, processNode} from 'src/services/nodes';
-import {delay} from 'src/utils';
 
 getNode(1).then(processNode);
 
@@ -16,7 +14,7 @@ export default {
   data () {
     return {
       msg: 'Hello Vue 2.0!'
-    }
+    };
   },
   components: {
     Messages,

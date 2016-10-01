@@ -12,7 +12,6 @@
 </template>
 
 <script>
-import {delay} from 'src/utils';
 import {getNode, addNode, popNode, processNode} from 'src/services/nodes';
 
 export default {
@@ -48,7 +47,7 @@ export default {
     Promise.all(this.node.children.map(getNode))
     .then(children => this.children = children);
   },
-}
+};
 </script>
 
 <style lang="less" scoped>

@@ -59,7 +59,7 @@ export default {
       el.setAttribute('style', style);
     },
   },
-}
+};
 </script>
 
 <style lang="less" scoped>
