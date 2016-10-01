@@ -1,6 +1,6 @@
 <template>
   <div class="messages">
-    <component v-for="item in nodes" :is="`${item.type}-item`" :node="item"></component>
+    <component v-for="item in nodes" :is="`${item.type}-item`" :node="item" :key="item.id"></component>
   </div>
 </template>
 
