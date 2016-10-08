@@ -3,10 +3,6 @@ export default {
     id: 1,
     type: 'text',
     content: 'Hi there!',
-    style: {
-      color: 'blue',
-      background: 'golden',
-    },
     next: 2,
   },
   2: {
