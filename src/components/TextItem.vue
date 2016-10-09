@@ -1,6 +1,6 @@
 <template>
   <div class="item" :class="className">
-    <div class="item-container" v-html="node.content" ref="el"></div>
+    <div class="item-container" v-html="node.content.data" ref="el"></div>
   </div>
 </template>
 

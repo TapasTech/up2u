@@ -6,9 +6,15 @@
 
 <script>
 import Messages from 'src/components/Messages';
-import {getNode, processNode} from 'src/services/nodes';
+import {addNode, getNode, processNode} from 'src/services/nodes';
+import {Node} from 'src/services/models';
 
-getNode(1).then(processNode);
+Node.get('root')
+.then(root => {
+  return Node.Tree.fill({id: root.id}).get()
+  .then(tree => tree.forEach(addNode))
+  .then(() => processNode(root.id));
+});
 
 export default {
   data () {

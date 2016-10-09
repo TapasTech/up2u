@@ -1,18 +1,18 @@
 <template>
   <div class="item-choices">
     <div class="item-response">
-      <div class="item-hint" v-text="node.content"></div>
+      <div class="item-hint" v-text="content.data"></div>
       <div class="item-choice-wrap">
         <div class="item-container item-user"
         v-for="(choice,index) in children" ref="choices"
-        v-text="choice.title" @click="pick(choice,index)"></div>
+        v-text="choice.content.title" @click="pick(choice,index)"></div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import {getNode, addNode, popNode, processNode} from 'src/services/nodes';
+import {getNode, pushNode, popNode, processNode} from 'src/services/nodes';
 
 export default {
   props: ['node', 'loading'],
@@ -20,6 +20,11 @@ export default {
     return {
       children: [],
     };
+  },
+  computed: {
+    content() {
+      return this.node.content || {};
+    },
   },
   methods: {
     pick(choice, index) {
@@ -32,12 +37,14 @@ export default {
       popNode(this.node)
       .then(() => {
         const {content} = this.node;
-        return content && addNode({content});
+        return content && pushNode({content});
       })
       .then(() => {
         const toNode = Object.assign({
           from: source,
-        }, choice);
+        }, choice, {
+          id: null,
+        });
         processNode(toNode);
         return toNode;
       });

@@ -1,6 +1,6 @@
 import {delay} from 'src/utils';
-import nodeMap from './mock';
 
+const nodeMap = {};
 export const nodes = [];
 const supportedTypes = [
   'text',
@@ -25,27 +25,49 @@ export function addNode(node) {
     node.className = 'item-user';
   }
   node.id = node.id || getId();
-  nodes.push(node);
+  if (node.parent) {
+    const parent = nodeMap[node.parent];
+    if (parent) {
+      const children = parent.children = parent.children || [];
+      children.push(node.id);
+    }
+  }
+  if (nodeMap[node.id]) {
+    console.warn(`Node ${node.id} is overwritten!`)
+  }
+  nodeMap[node.id] = node;
+  return node;
+}
+
+export function pushNode(id) {
+  if (typeof id === 'object') id = addNode(id).id;
+  const node = nodeMap[id];
+  node && nodes.push(node);
   return node;
 }
 
 export function popNode(node) {
+  if (typeof node !== 'object') node = nodeMap[node];
   const i = nodes.indexOf(node);
   return ~i && nodes.splice(i, 1) ? Promise.resolve(node) : Promise.reject();
 }
 
-function doProcessNode(node) {
-  addNode(node);
+function doProcessNode(id) {
+  const node = pushNode(id);
+  if ([
+    types.choices,
+  ].includes(node.type)) return Promise.reject();
   return delay(node.delay || 1000)
   .then(() => getNext(node))
-  .then(next => {
-    if (!next) return Promise.reject();
-    return processNode(next);
+  .then(nextId => {
+    if (!nextId) return Promise.reject();
+    return processNode(nextId);
   });
 }
 
-export function processNode(node) {
-  return doProcessNode(node)
+export function processNode(id) {
+  if (typeof id === 'object') id = addNode(id).id;
+  return doProcessNode(id)
   .catch(() => console.log('No more nodes.'));
 }
 
@@ -54,9 +76,7 @@ export function getNode(id) {
 }
 
 export function getNext(node) {
-  const {next} = node;
-  return getNode(next)
-  .then(nextNode => nextNode || fetchNext(node.id));
+  return node.children[0];
 }
 
 function fetchNext(id) {
