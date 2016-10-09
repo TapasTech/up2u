@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import 'src/utils/polyfills';
-import App from './App.vue';
+import App from './components/App.vue';
 
 new Vue({
   el: '#app',

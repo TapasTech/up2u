@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import Messages from 'src/components/Messages';
+import Messages from './Messages';
 import {addNode, getNode, processNode} from 'src/services/nodes';
 import {Node} from 'src/services/models';
 
