@@ -16,5 +16,9 @@ function parseNodes(data, options) {
 
 export const Node = restful.model('nodes');
 Node.posthandlers.push(parseNodes);
+
 Node.Tree = Node.model(':id', 'tree');
 Node.Tree.posthandlers.push(parseNodes);
+
+Node.Children = Node.model(':id', 'children');
+Node.Children.posthandlers.push(parseNodes);
