@@ -14,12 +14,13 @@
     </div>
     <div class="flex-auto flex-col" v-if="current===newItem">
       <input class="form-input mb-10" placeholder="Search here" v-model="searchData.value">
-      <div class="flex-auto">
+      <div class="flex-auto toast">
         <block v-for="block in searchData.results" :block="block" :on-pick="pickAdd"></block>
       </div>
-      <ul class="pagination">
-        <li class="page-item">
-          <a href="#">1</a>
+      <ul class="pagination" :class="{invisible:!searchData.meta.totalPages}">
+        <li class="page-item" v-for="page in searchData.pages">
+          <span v-if="!page.value" v-text="page.title"></span>
+          <a v-if="page.value" v-text="page.title" @click.prevent="transitionTo(page.value)"></a>
         </li>
       </ul>
     </div>
@@ -72,6 +73,8 @@ export default {
       this.searchData = {
         value: '',
         results: null,
+        meta: {},
+        pages: [],
       };
     },
     pickAdd(block) {
@@ -79,7 +82,42 @@ export default {
     },
     search() {
       Blocks.get(null, {name: this.searchData.value})
-      .then(results => this.searchData.results = results);
+      .then(results => {
+        this.searchData.results = results;
+        const meta = this.searchData.meta = results.meta;
+        const pages = [{
+          title: 1,
+          value: 1,
+        }];
+        meta.currentPage - 1 > 2 && pages.push({
+          title: '...',
+        });
+        meta.currentPage - 1 > 1 && pages.push({
+          title: meta.currentPage - 1,
+          value: meta.currentPage - 1,
+        });
+        meta.currentPage > 1 && pages.push({
+          title: meta.currentPage,
+        });
+        meta.currentPage < meta.totalPages && pages.push({
+          title: meta.currentPage + 1,
+          value: meta.currentPage + 1,
+        });
+        meta.currentPage + 1 < meta.totalPages && pages.push({
+          title: meta.currentPage + 2,
+          value: meta.currentPage + 2,
+        });
+        meta.currentPage + 2 < meta.totalPages && pages.push({
+          title: '...',
+        });
+        meta.currentPage + 1 < meta.totalPages && pages.push({
+          title: meta.totalPages,
+          value: meta.totalPages,
+        });
+        this.searchData.pages = pages;
+      });
+    },
+    transitionTo(page) {
     },
   },
 };
