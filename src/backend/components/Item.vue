@@ -22,8 +22,6 @@
 </template>
 
 <script>
-import {setHash} from 'src/utils/hash';
-
 const typeKeys = {
   text: ['data'],
   link: ['data', 'link'],
@@ -43,7 +41,6 @@ export default {
   },
   methods: {
     spread() {
-      setHash({id: this.node.id});
     },
   },
 };

@@ -5,20 +5,48 @@ const restful = new Restful({
   presets: ['json'],
 });
 
-function parseNodes(data, options) {
-  if (options.relative) {
-    data.content = JSON.parse(data.content);
-  } else {
-    data.forEach(item => item.content = JSON.parse(item.content));
-  }
-  return data;
+function parseItems(parse) {
+  return function (data, options) {
+    if (options.relative) {
+      parse(data);
+    } else {
+      if (data.rows) {
+        let rows = [];
+        const meta = Object.keys(data).reduce((meta, key) => {
+          if (key === 'rows') {
+            rows = data[key];
+          } else {
+            meta[key] = data[key];
+          }
+          return meta;
+        }, {});
+        rows.meta = meta;
+        data = rows;
+      }
+      data.forEach(item => parse(item));
+    }
+    return data;
+  };
 }
 
-export const Node = restful.model('nodes');
-Node.posthandlers.push(parseNodes);
+function decodeField(field) {
+  return function (data) {
+    try {
+      data[field] = JSON.parse(data[field]);
+    } catch (e) {
+      data[field] = {};
+    }
+    return data;
+  };
+}
 
-Node.Tree = Node.model(':id', 'tree');
-Node.Tree.posthandlers.push(parseNodes);
+const posthandleBlock = parseItems(decodeField('content'));
 
-Node.Children = Node.model(':id', 'children');
-Node.Children.posthandlers.push(parseNodes);
+export const Entry = restful.model('entries');
+Entry.posthandlers.push(parseItems(decodeField('data')));
+
+Entry.Blocks = Entry.model(':id', 'blocks');
+Entry.Blocks.posthandlers.push(posthandleBlock);
+
+export const Blocks = restful.model('blocks');
+Blocks.posthandlers.push(posthandleBlock);
