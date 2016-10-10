@@ -42,11 +42,11 @@ function decodeField(field) {
 
 const posthandleBlock = parseItems(decodeField('content'));
 
-export const Entry = restful.model('entries');
-Entry.posthandlers.push(parseItems(decodeField('data')));
+export const Entries = restful.model('entries');
+Entries.posthandlers.push(parseItems(decodeField('data')));
 
-Entry.Blocks = Entry.model(':id', 'blocks');
-Entry.Blocks.posthandlers.push(posthandleBlock);
+Entries.Blocks = Entries.model(':id', 'blocks');
+Entries.Blocks.posthandlers.push(posthandleBlock);
 
 export const Blocks = restful.model('blocks');
 Blocks.posthandlers.push(posthandleBlock);

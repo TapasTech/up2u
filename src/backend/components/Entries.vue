@@ -10,7 +10,7 @@
             <div>修改于 <span v-text="entry.updatedAt"></span></div>
           </div>
         </div>
-        <div class="card-body" v-text="entry.desc"></div>
+        <div class="card-body text-ellipsis" v-text="entry.desc"></div>
       </div>
     </div>
     <div class="column col-8 entry-list flex-col">
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import {Entry} from 'src/services/models';
+import {Entries} from 'src/services/models';
 import Blocks from './Blocks';
 
 export default {
@@ -38,7 +38,7 @@ export default {
     };
   },
   created() {
-    Entry.get().then(entries => {
+    Entries.get().then(entries => {
       this.entries = entries;
     });
   },
