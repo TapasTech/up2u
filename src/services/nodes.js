@@ -1,6 +1,6 @@
-import {delay} from 'src/utils';
+import {delay, idGenerator} from 'src/utils';
 
-const nodeMap = {};
+let nodeMap = {};
 export const nodes = [];
 const supportedTypes = [
   'text',
@@ -13,10 +13,7 @@ const types = supportedTypes.reduce((res, item) => {
   return res;
 }, {});
 
-const getId = function () {
-  var id = 0;
-  return () => `_node_${++ id}`;
-}();
+const getId = idGenerator('_node_');
 
 export function addNode(node) {
   node.type = node.type || types.text;
@@ -79,6 +76,49 @@ export function getNext(node) {
   return node.children[0];
 }
 
-function fetchNext(id) {
-  return null;
+export function flush() {
+  nodeMap = {};
+}
+
+export function checkNodes(nodes) {
+  const getByName = function (name) {
+    const next = map[name];
+    if (!next) throw new Error(`Node not found: ${name}`);
+    return next;
+  };
+  const getName = idGenerator('__');
+  const map = {};
+  nodes = nodes.map(function (node, index) {
+    node = Object.assign({}, node);
+    if (node.name && node.name.startsWith('__')) throw new Error(`[${index}] Invalid name: ${node.name}`);
+    node._name = node.name || getName();
+    node._index = index;
+    node._touched = false;
+    const existed = map[node._name];
+    if (existed) throw new Error(`[${index}] Name exists: ${node._name}`);
+    map[node._name] = node;
+    return node;
+  });
+  const queue = [nodes[0]];
+  while (queue.length) {
+    const node = queue.shift();
+    node._touched = true;
+    if (node.type === 'choices') {
+      queue.push(...node.children.map(getByName));
+    } else if (node.goto) {
+      queue.push(getByName(node.goto));
+      node._goto = node.goto;
+    } else {
+      const next = nodes[node._index + 1];
+      if (next) {
+        node._goto = next._name;
+        queue.push(next);
+      }
+    }
+  }
+  const untouched = nodes.find(node => !node._touched);
+  if (untouched) {
+    throw new Error(`[${untouched._index}] Got isolated node!`);
+  }
+  return nodes;
 }

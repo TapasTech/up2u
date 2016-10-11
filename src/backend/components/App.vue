@@ -54,7 +54,7 @@ body {
     background: white;
   }
   &.active {
-    border-color: green;
+    border-color: #27ae60;
   }
 }
 </style>

@@ -13,3 +13,8 @@ export function debounce(func, time) {
     timer = setTimeout(exec, time, this, args);
   };
 }
+
+export function idGenerator(prefix) {
+  var id = 0;
+  return () => `${prefix}${++ id}`;
+}

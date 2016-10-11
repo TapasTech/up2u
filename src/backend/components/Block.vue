@@ -1,5 +1,5 @@
 <template>
-  <div class="card hand inline-block block-item mr-5"
+  <div class="card hand block-item mr-5"
     :class="{active:active}" @click="handleClick">
     <div class="card-header text-center">
       <button v-if="active" class="btn btn-clear float-right" @click="remove(block)"></button>
