@@ -50,9 +50,6 @@ export default {
       current: {},
     };
   },
-  watch: {
-    current: 'load',
-  },
   created() {
     this.load();
   },

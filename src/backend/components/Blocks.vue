@@ -37,9 +37,6 @@ import Block from './Block';
 import BlockEdit from './BlockEdit';
 
 const placeholderNew = {};
-const newBlock = {
-  name: 'NEW',
-};
 
 export default {
   props: ['entry', 'onChange'],
@@ -62,7 +59,6 @@ export default {
   created() {
     this.loadData();
     this.search = debounce(this.search, 300);
-    this.addBlock();
   },
   watch: {
     entry: 'loadData',
@@ -73,10 +69,18 @@ export default {
   methods: {
     loadData() {
       Entries.Blocks.fill({id: this.entry.id}).get()
-      .then(blocks => this.blocks = blocks);
+      .then(blocks => {
+        this.blocks = blocks;
+        const id = this.current.block && this.current.block.id;
+        this.pick(id && blocks.find(block => block.id === id));
+      });
     },
     pick(block) {
-      this.current = {block, data: block};
+      if (block) {
+        this.current = {block, data: block};
+      } else {
+        this.addBlock();
+      }
     },
     remove(block) {
       const i = this.blocks.indexOf(block);
@@ -106,7 +110,10 @@ export default {
     },
     updateBlock(data) {
       (data.id ? Blocks.put(data.id, data) : Blocks.post(null, data))
-      .then(block => this.pickAdd(block));
+      .then(block => {
+        this.pickAdd(block);
+        this.pick(block);
+      });
     },
   },
 };
