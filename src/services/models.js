@@ -7,7 +7,7 @@ const restful = new Restful({
 
 function parseItems(parse) {
   return function (data, options) {
-    if (options.relative) {
+    if (options.relative || options.method === 'POST') {
       parse(data);
     } else {
       if (data.rows) {

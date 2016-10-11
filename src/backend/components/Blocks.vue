@@ -10,6 +10,7 @@
         </div>
       </div>
     </div>
+    <div class="divider"></div>
     <div class="flex-auto flex-col" v-if="current.data">
       <block-edit :block="current.data" :on-save="updateBlock"></block-edit>
     </div>
@@ -41,7 +42,7 @@ const newBlock = {
 };
 
 export default {
-  props: ['entry'],
+  props: ['entry', 'onChange'],
   components: {
     Block,
     BlockEdit,
@@ -81,6 +82,7 @@ export default {
       const i = this.blocks.indexOf(block);
       ~i && this.blocks.splice(i, 1);
       this.addBlock();
+      this.onChange && this.onChange(this.blocks);
     },
     addBlock() {
       this.current = {block: placeholderNew};
@@ -93,6 +95,7 @@ export default {
       const i = this.blocks.findIndex(item => item.id === block.id);
       if (~i) Vue.set(this.blocks, i, block);
       else this.blocks.push(block);
+      this.onChange && this.onChange(this.blocks);
     },
     search() {
       Blocks.get(null, {name: this.searchData.value})
@@ -102,7 +105,7 @@ export default {
       });
     },
     updateBlock(data) {
-      (data.id ? Blocks.put(data.id, data) : Blocks.post(data))
+      (data.id ? Blocks.put(data.id, data) : Blocks.post(null, data))
       .then(block => this.pickAdd(block));
     },
   },

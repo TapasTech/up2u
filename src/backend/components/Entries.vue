@@ -15,9 +15,21 @@
     </div>
     <div class="column col-8 entry-list flex-col">
       <div class="flex-auto flex-col" v-if="current.entry">
-        <h4 v-text="current.entry.name"></h4>
-        <p v-text="current.entry.desc"></p>
-        <blocks :entry="current.entry"></blocks>
+        <div class="columns">
+          <div class="column col-2">
+            <h4 class="hand entry-title" v-if="!editing" v-text="current.data.name" @click="edit"></h4>
+            <input class="form-input" v-if="editing" type="text" v-model="current.data.name">
+          </div>
+          <div class="column col-6">
+            <div class="hand" v-if="!editing" v-text="current.data.desc" @click="edit"></div>
+            <input class="form-input" v-if="editing" type="text" v-model="current.data.desc">
+          </div>
+          <div class="column col-4 text-right">
+            <button class="btn btn-primary" @click="save">Save</button>
+            <button class="btn" @click="cancel">Cancel</button>
+          </div>
+        </div>
+        <blocks :entry="current.entry" :on-change="onChange"></blocks>
       </div>
     </div>
   </div>
@@ -33,18 +45,50 @@ export default {
   },
   data() {
     return {
+      editing: null,
       entries: [],
       current: {},
     };
   },
+  watch: {
+    current: 'load',
+  },
   created() {
-    Entries.get().then(entries => {
-      this.entries = entries;
-    });
+    this.load();
   },
   methods: {
+    load() {
+      Entries.get().then(entries => {
+        this.entries = entries;
+      });
+    },
+    edit() {
+      this.editing = true;
+    },
     pick(entry) {
-      this.current = {entry};
+      this.editing = null;
+      this.current = {
+        entry,
+        data: {
+          id: entry.id,
+          name: entry.name,
+          desc: entry.desc,
+          blockIds: entry.blocks,
+        },
+      };
+    },
+    onChange(blocks) {
+      this.current.data.blockIds = blocks.map(block => block.id);
+    },
+    save() {
+      Entries.put(this.current.data.id, this.current.data)
+      .then(entry => {
+        const i = this.entries.indexOf(this.current.entry);
+        this.pick(this.entries[i] = entry);
+      });
+    },
+    cancel() {
+      this.pick(this.current.entry);
     },
   },
 };
@@ -59,5 +103,8 @@ export default {
 }
 .entry-list {
   background: white;
+}
+.entry-title {
+  margin-top: 0;
 }
 </style>
