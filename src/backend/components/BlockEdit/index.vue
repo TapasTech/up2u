@@ -2,10 +2,10 @@
   <div class="flex-col flex-auto">
     <div class="columns">
       <div class="column col-2">
-        <input class="form-input" v-model="block.name" placeholder="Name">
+        <input class="form-input" v-model="edit.name" placeholder="Name">
       </div>
       <div class="column col-6">
-        <input class="form-input" v-model="block.desc" placeholder="Description">
+        <input class="form-input" v-model="edit.desc" placeholder="Description">
       </div>
       <div class="column col-4">
         <button class="btn btn-primary" @click="save">Save</button>
@@ -37,16 +37,13 @@ export default {
   },
   data() {
     return {
-      edit: {
-        name: this.block.name,
-        desc: this.block.desc,
-      },
+      edit: {},
       content: null,
     };
   },
   watch: {
     block(block) {
-      this.loadContent(block.content);
+      this.loadData(block);
     },
     content(content) {
       if (this.cachedContent !== content) {
@@ -56,7 +53,7 @@ export default {
     },
   },
   created() {
-    this.loadContent(this.block.content);
+    this.loadData(this.block);
   },
   mounted() {
     const cm = this.cm = CodeMirror(this.$refs.code, {
@@ -70,11 +67,20 @@ export default {
     });
   },
   methods: {
-    loadContent(nodes) {
-      nodes = nodes.map(node => Object.keys(node).reduce((res, key) => {
-        if (!key.startsWith('_')) res[key] = node[key];
-        return res;
-      }, {}));
+    loadData(block) {
+      this.edit = {
+        id: block.id,
+        name: block.name,
+        desc: block.desc,
+      };
+      let nodes = [];
+      try {
+        nodes = block.content.map(node => Object.keys(node).reduce((res, key) => {
+          if (!key.startsWith('_')) res[key] = node[key];
+          return res;
+        }, {}));
+      } catch (e) {
+      }
       this.content = yaml.safeDump(nodes);
       this.cm && this.cm.setValue(this.content);
     },
@@ -88,7 +94,6 @@ export default {
       }
       this.onSave({
         ...this.edit,
-        id: this.block.id,
         content: validatedContent,
       });
     },

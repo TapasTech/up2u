@@ -99,10 +99,7 @@ export default {
     },
     updateBlock(data) {
       (data.id ? Blocks.put(data.id, data) : Blocks.post(data))
-      .then(block => {
-        this.pickAdd(block);
-        console.log(block);
-      });
+      .then(block => this.pickAdd(block));
     },
   },
 };

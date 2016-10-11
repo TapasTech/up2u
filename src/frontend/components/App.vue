@@ -7,13 +7,12 @@
 <script>
 import Messages from './Messages';
 import {addNode, getNode, processNode} from 'src/services/nodes';
-import {Node} from 'src/services/models';
+import {Entries} from 'src/services/models';
 
-Node.get('root')
-.then(root => {
-  return Node.Tree.fill({id: root.id}).get()
-  .then(tree => tree.forEach(addNode))
-  .then(() => processNode(root.id));
+Entries.get('default')
+.then(entry => Entries.Blocks.fill({id: entry.id}).get())
+.then(blocks => {
+  console.log(blocks);
 });
 
 export default {
