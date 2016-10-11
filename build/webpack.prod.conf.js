@@ -47,7 +47,7 @@ var webpackConfig = merge(baseWebpackConfig, {
         ? 'index.html'
         : config.build.index,
       template: 'public/index.html',
-      inject: true,
+      excludeChunks: ['backend'],
       minify: {
         removeComments: true,
         collapseWhitespace: true,
@@ -61,12 +61,13 @@ var webpackConfig = merge(baseWebpackConfig, {
     new HtmlWebpackPlugin({
       filename: 'backend.html',
       template: 'public/index.html',
-      chunks: ['backend'],
+      excludeChunks: ['app'],
       minify: {
         removeComments: true,
         collapseWhitespace: true,
         removeAttributeQuotes: true
       },
+      chunksSortMode: 'dependency'
     }),
     // split vendor js into its own file
     new webpack.optimize.CommonsChunkPlugin({
