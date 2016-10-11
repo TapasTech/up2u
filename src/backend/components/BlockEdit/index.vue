@@ -81,7 +81,7 @@ export default {
         }, {}));
       } catch (e) {
       }
-      this.content = yaml.safeDump(nodes);
+      this.content = nodes.length ? yaml.safeDump(nodes) : '';
       this.cm && this.cm.setValue(this.content);
     },
     save() {

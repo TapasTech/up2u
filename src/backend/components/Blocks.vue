@@ -1,7 +1,8 @@
 <template>
   <div class="flex-auto flex-col">
     <div class="flex-row blocks-manage mb-10">
-      <block v-for="block in blocks" :active="current.block===block" :block="block" :on-pick="pick"></block>
+      <block v-for="block in blocks" :active="current.block===block"
+        :block="block" :on-pick="pick" :on-remove="remove"></block>
       <div class="card hand block-item block-item-new"
         :class="{active:current.block===placeholderNew}" @click="addBlock">
         <div class="card-header text-center">
@@ -77,6 +78,9 @@ export default {
       this.current = {block, data: block};
     },
     remove(block) {
+      const i = this.blocks.indexOf(block);
+      ~i && this.blocks.splice(i, 1);
+      this.addBlock();
     },
     addBlock() {
       this.current = {block: placeholderNew};
