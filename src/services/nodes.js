@@ -1,3 +1,4 @@
+import events from 'src/services/events';
 import {delay, idGenerator} from 'src/utils';
 
 let nodeMap = {};
@@ -21,23 +22,16 @@ export function addNode(node) {
     node.type = types.text;
     node.className = 'item-user';
   }
-  node.id = node.id || getId();
-  if (node.parent) {
-    const parent = nodeMap[node.parent];
-    if (parent) {
-      const children = parent.children = parent.children || [];
-      children.push(node.id);
-    }
+  node._name = node._name || getId();
+  if (nodeMap[node._name]) {
+    console.warn(`Node ${node._name} is overwritten!`)
   }
-  if (nodeMap[node.id]) {
-    console.warn(`Node ${node.id} is overwritten!`)
-  }
-  nodeMap[node.id] = node;
+  nodeMap[node._name] = node;
   return node;
 }
 
 export function pushNode(id) {
-  if (typeof id === 'object') id = addNode(id).id;
+  if (typeof id === 'object') id = addNode(id)._name;
   const node = nodeMap[id];
   node && nodes.push(node);
   return node;
@@ -53,19 +47,33 @@ function doProcessNode(id) {
   const node = pushNode(id);
   if ([
     types.choices,
-  ].includes(node.type)) return Promise.reject();
+  ].includes(node.type)) return;
   return delay(node.delay || 1000)
+  .then(() => events.$emit('PUSH', id))
   .then(() => getNext(node))
-  .then(nextId => {
-    if (!nextId) return Promise.reject();
-    return processNode(nextId);
-  });
+  .then(nextId => nextId && processNode(nextId));
 }
 
 export function processNode(id) {
-  if (typeof id === 'object') id = addNode(id).id;
-  return doProcessNode(id)
-  .catch(() => console.log('No more nodes.'));
+  if (typeof id === 'object') id = addNode(id)._name;
+  return doProcessNode(id);
+}
+
+export function processBlock(block) {
+  flushNodes();
+  const nodes = block.content;
+  nodes.forEach(addNode);
+  const exit = nodes[nodes.length - 1]._name;
+  return new Promise(resolve => {
+    function listen(id) {
+      if (id === exit) {
+        events.$off('PUSH', listen);
+        resolve();
+      }
+    }
+    events.$on('PUSH', listen);
+    processNode(nodes[0]._name);
+  });
 }
 
 export function getNode(id) {
@@ -73,10 +81,10 @@ export function getNode(id) {
 }
 
 export function getNext(node) {
-  return node.children[0];
+  return node._goto;
 }
 
-export function flush() {
+export function flushNodes() {
   nodeMap = {};
 }
 

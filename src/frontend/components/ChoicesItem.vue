@@ -1,11 +1,11 @@
 <template>
   <div class="item-choices">
     <div class="item-response">
-      <div class="item-hint" v-text="content.data"></div>
+      <div class="item-hint" v-text="node.data"></div>
       <div class="item-choice-wrap">
         <div class="item-container item-user"
         v-for="(choice,index) in children" ref="choices"
-        v-text="choice.content.title" @click="pick(choice,index)"></div>
+        v-text="choice.title" @click="pick(choice,index)"></div>
       </div>
     </div>
   </div>
@@ -21,11 +21,6 @@ export default {
       children: [],
     };
   },
-  computed: {
-    content() {
-      return this.node.content || {};
-    },
-  },
   methods: {
     pick(choice, index) {
       const el = this.$refs.choices[index];
@@ -36,14 +31,14 @@ export default {
       };
       popNode(this.node)
       .then(() => {
-        const {content} = this.node;
-        return content && pushNode({content});
+        const {data} = this.node;
+        return data && pushNode({data});
       })
       .then(() => {
         const toNode = Object.assign({
           from: source,
         }, choice, {
-          id: null,
+          _name: null,
         });
         processNode(toNode);
         return toNode;

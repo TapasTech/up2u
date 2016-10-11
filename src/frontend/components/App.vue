@@ -6,14 +6,12 @@
 
 <script>
 import Messages from './Messages';
-import {addNode, getNode, processNode} from 'src/services/nodes';
+import {processBlock} from 'src/services/nodes';
 import {Entries} from 'src/services/models';
 
 Entries.get('default')
 .then(entry => Entries.Blocks.fill({id: entry.id}).get())
-.then(blocks => {
-  console.log(blocks);
-});
+.then(blocks => blocks.reduce((ready, block) => ready.then(() => processBlock(block)), Promise.resolve()));
 
 export default {
   components: {

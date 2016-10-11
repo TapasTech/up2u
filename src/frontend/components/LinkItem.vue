@@ -1,8 +1,8 @@
 <template>
   <a class="item" :class="node.className"
-  :href="node.content.link" target="_blank">
+  :href="node.link" target="_blank">
     <div class="item-container">
-      <div v-html="node.content.data"></div>
+      <div v-html="node.data"></div>
       <div class="item-go">&gt;</div>
     </div>
   </a>
