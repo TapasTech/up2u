@@ -37,7 +37,7 @@ export default {
 <style lang="less">
 .messages {
   height: 0;
-  padding-bottom: 2rem;
+  padding: 1rem 1rem 2rem;
   overflow: auto;
 }
 </style>
