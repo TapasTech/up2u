@@ -3,6 +3,9 @@ import {delay, idGenerator} from 'src/utils';
 
 let nodeMap = {};
 export const nodes = [];
+export const nodeData = {
+  choices: null,
+};
 const supportedTypes = [
   'text',
   'link',
@@ -44,10 +47,17 @@ export function popNode(node) {
 }
 
 function doProcessNode(id) {
-  const node = pushNode(id);
+  if (typeof id === 'object') id = addNode(id)._name;
+  const node = nodeMap[id];
   if ([
     types.choices,
-  ].includes(node.type)) return;
+  ].includes(node.type)) {
+    nodeData.choices = node;
+    return;
+  } else {
+    nodeData.choices = null;
+    pushNode(id);
+  }
   return delay(node.delay || 1000)
   .then(() => events.$emit('PUSH', id))
   .then(() => getNext(node))

@@ -1,13 +1,16 @@
 <template>
-  <div id="app">
-    <messages></messages>
+  <div id="app" class="flex-col">
+    <messages class="flex-auto"></messages>
+    <choices-item :node="nodeData.choices" v-if="nodeData.choices"></choices-item>
   </div>
 </template>
 
 <script>
-import Messages from './Messages';
 import {processBlock} from 'src/services/nodes';
 import {Entries} from 'src/services/models';
+import store from 'src/services/store';
+import Messages from './Messages';
+import ChoicesItem from './ChoicesItem';
 
 Entries.get('default')
 .then(entry => Entries.Blocks.fill({id: entry.id}).get())
@@ -16,6 +19,10 @@ Entries.get('default')
 export default {
   components: {
     Messages,
+    ChoicesItem,
+  },
+  data() {
+    return store;
   },
 };
 </script>
@@ -25,13 +32,26 @@ export default {
 * {
   box-sizing: border-box;
 }
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+.flex-auto {
+  flex: auto;
+}
+
 body {
   font-family: Helvetica, sans-serif;
   font-size: 14px;
   background: #eee;
 }
+html,
+body {
+  height: 100%;
+}
 #app {
   width: 100%;
+  height: 100%;
   padding: 1rem;
 }
 #app,
@@ -45,6 +65,9 @@ body {
   margin-bottom: 1rem;
   text-decoration: none;
   color: #333;
+}
+.item-transition {
+  transition: .5s;
 }
 .item-hide {
   visibility: hidden;

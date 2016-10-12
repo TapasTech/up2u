@@ -1,5 +1,6 @@
-import {nodes} from './nodes';
+import {nodes, nodeData} from './nodes';
 
 export default {
   nodes,
+  nodeData,
 };

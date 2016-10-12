@@ -12,14 +12,20 @@
 </template>
 
 <script>
-import {getNode, pushNode, popNode, processNode} from 'src/services/nodes';
+import events from 'src/services/events';
+import {getNode, pushNode, processNode} from 'src/services/nodes';
 
 export default {
-  props: ['node', 'loading'],
+  props: ['node'],
   data() {
     return {
       children: [],
     };
+  },
+  watch: {
+    children() {
+      this.$nextTick(() => events.$emit('SCROLL_BOT'));
+    },
   },
   methods: {
     pick(choice, index) {
@@ -29,20 +35,15 @@ export default {
         className: el.className,
         rect: el.getBoundingClientRect(),
       };
-      popNode(this.node)
-      .then(() => {
-        const {data} = this.node;
-        return data && pushNode({data});
-      })
-      .then(() => {
-        const toNode = Object.assign({
-          from: source,
-        }, choice, {
-          _name: null,
-        });
-        processNode(toNode);
-        return toNode;
+      const {data} = this.node;
+      data && pushNode({data});
+      const toNode = Object.assign({
+        from: source,
+      }, choice, {
+        // clear _name to force create a new node
+        _name: null,
       });
+      processNode(toNode);
     },
   },
   created() {
@@ -52,21 +53,27 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .item-choices {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 1rem;
-  background: inherit;
+  @bg-color: #eee;
+  position: relative;
+  background: @bg-color;
+  &::before {
+    content: ' ';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: 2rem;
+    background: linear-gradient(to top, @bg-color, transparent);
+  }
+  .item-container {
+    margin: 1rem;
+    cursor: pointer;
+  }
 }
 .item-hint {
   text-align: center;
   font-size: 1.2rem;
-}
-.item-container {
-  margin: 1rem;
-  cursor: pointer;
 }
 </style>

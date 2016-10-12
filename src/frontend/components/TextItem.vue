@@ -1,31 +1,30 @@
 <template>
-  <div class="item" :class="className">
+  <div :class="['item',{'item-hide':node.from}]">
     <div class="item-container" v-html="node.data" ref="el"></div>
   </div>
 </template>
 
 <script>
+import events from 'src/services/events';
+
 export default {
-  props: ['node', 'loading'],
-  data() {
-    return {
-      hide: !!this.node.from,
-    };
-  },
-  computed: {
-    className() {
-      const names = [];
-      this.node.className && names.push(this.node.className);
-      this.hide && names.push('item-hide');
-      return names.join(' ');
-    },
-  },
+  props: ['node'],
   mounted() {
-    const source = this.node.from;
-    if (source) {
+    events.$emit('SCROLL_BOT');
+    this.animateFrom(this.node.from);
+  },
+  methods: {
+    setStyles(el, styles) {
+      const style = Object.keys(styles)
+      .map(key => `${key}:${styles[key]}`)
+      .join(';');
+      el.setAttribute('style', style);
+    },
+    animateFrom(source) {
+      if (!source) return;
       const el = document.createElement('div');
       el.innerHTML = source.html;
-      el.className = source.className;
+      el.className = `item-transition ${source.className}`;
       this.setStyles(el, {
         position: 'absolute',
         left: source.rect.left + 'px',
@@ -38,7 +37,6 @@ export default {
         const rect = this.$refs.el.getBoundingClientRect();
         this.setStyles(el, {
           position: 'absolute',
-          transition: '.5s',
           left: rect.left + 'px',
           top: rect.top + 'px',
           width: rect.width + 'px',
@@ -46,17 +44,9 @@ export default {
         });
         setTimeout(() => {
           el.remove();
-          this.hide = false;
+          this.node.from = null;
         }, 500);
       });
-    }
-  },
-  methods: {
-    setStyles(el, styles) {
-      const style = Object.keys(styles)
-      .map(key => `${key}:${styles[key]}`)
-      .join(';');
-      el.setAttribute('style', style);
     },
   },
 };
