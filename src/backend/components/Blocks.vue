@@ -1,7 +1,8 @@
 <template>
   <div class="flex-auto flex-col">
     <div class="flex-row blocks-manage mb-10">
-      <block v-for="block in blocks" :active="current.block===block"
+      <block class="mr-5"
+        v-for="block in blocks" :active="current.block===block"
         :block="block" :on-pick="pick" :on-remove="remove"></block>
       <div class="card hand block-item block-item-new"
         :class="{active:current.block===placeholderNew}" @click="addBlock">
@@ -15,15 +16,29 @@
       <block-edit :block="current.data" :on-save="updateBlock"></block-edit>
     </div>
     <div class="flex-auto flex-col" v-if="!current.data">
-      <input class="form-input mb-10" placeholder="Search here" v-model="searchData.value">
+      <div class="columns">
+        <div class="column col-6">
+          <input class="form-input" placeholder="Search here" v-model="searchData.value">
+        </div>
+        <!--
+        <div class="column col-6">
+          <label class="form-checkbox">
+            <input type="checkbox" v-model="searchData.snippetsOnly" @change="search">
+            <i class="form-icon"></i>
+            Search for snippets only
+          </label>
+        </div>
+        -->
+      </div>
       <div class="flex-auto toast block-list">
-        <div class="card hand float-left block-item block-item-new mr-5" @click="createBlock">
+        <div class="card hand float-left block-item block-item-new mr-5 mb-5" @click="createBlock">
           <div class="card-header text-center">
-            <h5>+</h5>
+            <h5><em>EMPTY</em></h5>
           </div>
           <div class="card-body"></div>
         </div>
-        <block v-for="block in searchData.results" :block="block" :on-pick="pickAdd"></block>
+        <block class="mr-5 mb-5"
+          v-for="block in searchData.results" :block="block" :on-pick="pickAdd"></block>
       </div>
     </div>
   </div>
@@ -53,6 +68,7 @@ export default {
         value: '',
         results: null,
         meta: {},
+        snippetsOnly: true,
       },
     };
   },
@@ -96,24 +112,30 @@ export default {
       Vue.set(this.current, 'data', {});
     },
     pickAdd(block) {
-      const i = this.blocks.findIndex(item => item.id === block.id);
-      if (~i) Vue.set(this.blocks, i, block);
-      else this.blocks.push(block);
-      this.onChange && this.onChange(this.blocks);
+      this.current = {
+        block: placeholderNew,
+        data: {
+          ...block,
+          id: null,
+          snippet: true,
+        },
+      };
     },
     search() {
-      Blocks.get(null, {name: this.searchData.value})
+      const params = {
+        name: this.searchData.value,
+      };
+      if (!this.searchData.snippetsOnly) params.all = '';
+      Blocks.get(null, params)
       .then(results => {
         this.searchData.results = results;
         this.searchData.meta = results.meta;
       });
     },
-    updateBlock(data) {
-      (data.id ? Blocks.put(data.id, data) : Blocks.post(null, data))
-      .then(block => {
-        this.pickAdd(block);
-        this.pick(block);
-      });
+    updateBlock(block) {
+      const i = this.blocks.findIndex(item => item.id === block.id);
+      ~i ? Vue.set(this.blocks, i, block) : this.blocks.push(block);
+      this.pick(block);
     },
   },
 };

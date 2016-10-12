@@ -56,7 +56,8 @@ var webpackConfig = merge(baseWebpackConfig, {
         // https://github.com/kangax/html-minifier#options-quick-reference
       },
       // necessary to consistently work with multiple chunks via CommonsChunkPlugin
-      chunksSortMode: 'dependency'
+      chunksSortMode: 'dependency',
+      title: 'Up 2 U',
     }),
     new HtmlWebpackPlugin({
       filename: 'backend.html',
@@ -67,7 +68,8 @@ var webpackConfig = merge(baseWebpackConfig, {
         collapseWhitespace: true,
         removeAttributeQuotes: true
       },
-      chunksSortMode: 'dependency'
+      chunksSortMode: 'dependency',
+      title: 'Up2U Admin',
     }),
     // split vendor js into its own file
     new webpack.optimize.CommonsChunkPlugin({

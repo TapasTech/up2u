@@ -9,6 +9,7 @@
       </div>
       <div class="column col-4">
         <button class="btn btn-primary" @click="save">Save</button>
+        <button class="btn btn-primary" @click="saveSnippet" v-if="!edit.snippet">Save as snippet</button>
       </div>
     </div>
     <div class="flex-auto code" ref="code"></div>
@@ -27,6 +28,7 @@ import yaml from 'js-yaml';
 import CodeMirror from 'codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/yaml/yaml';
+import {Blocks} from 'src/services/models';
 // import NodeList from './List';
 import {checkNodes} from 'src/services/nodes';
 
@@ -72,6 +74,7 @@ export default {
         id: block.id,
         name: block.name,
         desc: block.desc,
+        snippet: block.snippet,
       };
       let nodes = [];
       try {
@@ -85,7 +88,7 @@ export default {
       this.content = nodes.length ? yaml.safeDump(nodes) : '';
       this.cm && this.cm.setValue(this.content);
     },
-    save() {
+    dumpData() {
       const nodes = yaml.safeLoad(this.content);
       let validatedContent;
       try {
@@ -93,10 +96,25 @@ export default {
       } catch (e) {
         alert(e.toString());
       }
-      this.onSave({
+      return {
         ...this.edit,
         content: validatedContent,
-      });
+      };
+    },
+    updateBlock(data) {
+      return data.id ? Blocks.put(data.id, data) : Blocks.post(null, data);
+    },
+    save() {
+      const data = this.dumpData();
+      data.snippet = false;
+      this.updateBlock(data)
+      .then(block => this.onSave(block));
+    },
+    saveSnippet() {
+      const data = this.dumpData();
+      data.id = null;
+      data.snippet = true;
+      this.updateBlock(data);
     },
   },
 };
