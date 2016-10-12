@@ -105,7 +105,7 @@ export default {
       Blocks.get(null, {name: this.searchData.value})
       .then(results => {
         this.searchData.results = results;
-        const meta = this.searchData.meta = results.meta;
+        this.searchData.meta = results.meta;
       });
     },
     updateBlock(data) {

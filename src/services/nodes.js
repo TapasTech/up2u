@@ -27,7 +27,7 @@ export function addNode(node) {
   }
   node._name = node._name || getId();
   if (nodeMap[node._name]) {
-    console.warn(`Node ${node._name} is overwritten!`)
+    console.warn(`Node ${node._name} is overwritten!`);
   }
   nodeMap[node._name] = node;
   return node;

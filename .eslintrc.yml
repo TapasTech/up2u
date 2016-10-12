@@ -22,6 +22,12 @@ rules:
     - 2
     - args: all
       argsIgnorePattern: ^_
+  keyword-spacing:
+    - 2
+  space-before-function-paren:
+    - 2
+    - anonymous: always
+      named: never
 
 env:
   browser: true

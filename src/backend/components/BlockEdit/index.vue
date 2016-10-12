@@ -62,7 +62,7 @@ export default {
       tabSize: 2,
       value: this.cachedContent || '',
     });
-    cm.on('change', (cm, e) => {
+    cm.on('change', (cm, _e) => {
       this.content = this.cachedContent = cm.getValue();
     });
   },
@@ -80,6 +80,7 @@ export default {
           return res;
         }, {}));
       } catch (e) {
+        // ignore
       }
       this.content = nodes.length ? yaml.safeDump(nodes) : '';
       this.cm && this.cm.setValue(this.content);

@@ -34,6 +34,7 @@ function decodeField(field) {
     try {
       data[field] = JSON.parse(data[field]);
     } catch (e) {
+      // return value directly
     }
     return data;
   };
