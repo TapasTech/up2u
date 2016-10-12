@@ -29,11 +29,13 @@ module.exports = merge(baseWebpackConfig, {
       filename: 'index.html',
       template: 'public/index.html',
       chunks: ['app'],
+      title: 'Up 2 U',
     }),
     new HtmlWebpackPlugin({
       filename: 'backend.html',
       template: 'public/index.html',
       chunks: ['backend'],
+      title: 'Up2U Admin',
     }),
   ]
 })

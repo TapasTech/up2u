@@ -4,3 +4,7 @@ Object.assign = Object.assign || function (obj, ...args) {
   });
   return obj;
 };
+
+Array.prototype.includes = Array.prototype.includes || function (item) {
+  return !!~this.indexOf(item);
+};
