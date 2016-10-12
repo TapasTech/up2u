@@ -13,7 +13,7 @@
     </div>
     <div class="divider"></div>
     <div class="flex-auto flex-col" v-if="current.data">
-      <block-edit :block="current.data" :on-save="updateBlock"></block-edit>
+      <block-edit :block="current.data" :on-save="onUpdate"></block-edit>
     </div>
     <div class="flex-auto flex-col" v-if="!current.data">
       <div class="columns">
@@ -102,7 +102,7 @@ export default {
       const i = this.blocks.indexOf(block);
       ~i && this.blocks.splice(i, 1);
       this.addBlock();
-      this.onChange && this.onChange(this.blocks);
+      this.updateBlocks();
     },
     addBlock() {
       this.current = {block: placeholderNew};
@@ -132,10 +132,14 @@ export default {
         this.searchData.meta = results.meta;
       });
     },
-    updateBlock(block) {
+    onUpdate(block) {
       const i = this.blocks.findIndex(item => item.id === block.id);
       ~i ? Vue.set(this.blocks, i, block) : this.blocks.push(block);
       this.pick(block);
+      this.updateBlocks();
+    },
+    updateBlocks() {
+      this.onChange && this.onChange(this.blocks);
     },
   },
 };

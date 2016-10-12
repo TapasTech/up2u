@@ -65,7 +65,7 @@ export default {
     right: 0;
     bottom: 100%;
     height: 2rem;
-    background: linear-gradient(to top, @bg-color, transparent);
+    background: linear-gradient(to top, fade(@bg-color, 100%), fade(@bg-color, 0));
   }
   .item-container {
     margin: 1rem;
