@@ -12,7 +12,7 @@
         <button class="btn btn-primary" @click="saveSnippet" v-if="!edit.snippet">Save as snippet</button>
       </div>
     </div>
-    <div class="flex-auto code" ref="code"></div>
+    <vue-code class="flex-auto code" :code="content" :options="codeOptions" @changed="onUpdate"></vue-code>
     <!--
     <div class="flex-row flex-auto">
       <node-list class-name="parent-nodes" :nodes="nodes.parents" title="Parent"></node-list>
@@ -25,48 +25,33 @@
 
 <script>
 import yaml from 'js-yaml';
-import CodeMirror from 'codemirror';
+import 'codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/yaml/yaml';
+import VueCode from 'vue-code';
 import {Blocks} from 'src/services/models';
-// import NodeList from './List';
 import {checkNodes} from 'src/services/nodes';
 
 export default {
   props: ['block', 'onSave'],
   components: {
-    // NodeList,
+    VueCode,
   },
   data() {
     return {
       edit: {},
-      content: null,
+      content: '',
     };
   },
   watch: {
-    block(block) {
-      this.loadData(block);
-    },
-    content(content) {
-      if (this.cachedContent !== content) {
-        this.cachedContent = content;
-        this.cm && this.cm.setValue(content);
-      }
-    },
+    block: 'loadData',
   },
   created() {
-    this.loadData(this.block);
-  },
-  mounted() {
-    const cm = this.cm = CodeMirror(this.$refs.code, {
-      lineNumbers: true,
+    this.codeOptions = {
       mode: 'yaml',
-      tabSize: 2,
-      value: this.cachedContent || '',
-    });
-    cm.on('change', (cm, _e) => {
-      this.content = this.cachedContent = cm.getValue();
-    });
+      lineWrapping: true,
+    };
+    this.loadData(this.block);
   },
   methods: {
     loadData(block) {
@@ -86,7 +71,6 @@ export default {
         // ignore
       }
       this.content = nodes.length ? yaml.safeDump(nodes) : '';
-      this.cm && this.cm.setValue(this.content);
     },
     dumpData() {
       const nodes = yaml.safeLoad(this.content);
@@ -103,6 +87,9 @@ export default {
     },
     updateBlock(data) {
       return data.id ? Blocks.put(data.id, data) : Blocks.post(null, data);
+    },
+    onUpdate(content) {
+      this.content = content;
     },
     save() {
       const data = this.dumpData();
