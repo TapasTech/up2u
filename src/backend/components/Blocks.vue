@@ -54,7 +54,7 @@ import BlockEdit from './BlockEdit';
 const placeholderNew = {};
 
 export default {
-  props: ['entry', 'onChange'],
+  props: ['entry'],
   components: {
     Block,
     BlockEdit,
@@ -139,7 +139,7 @@ export default {
       this.updateBlocks();
     },
     updateBlocks() {
-      this.onChange && this.onChange(this.blocks);
+      this.$emit('changed', this.blocks);
     },
   },
 };

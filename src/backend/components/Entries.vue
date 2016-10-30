@@ -1,5 +1,5 @@
 <template>
-  <div class="entry-manage columns">
+  <div class="entry-list columns">
     <div class="column col-4">
       <div class="card hand entry-item" v-for="entry in entries"
         :class="{active:entry===current.entry}" @click="pick(entry)">
@@ -13,7 +13,7 @@
         <div class="card-body text-ellipsis" v-text="entry.desc"></div>
       </div>
     </div>
-    <div class="column col-8 entry-list flex-col">
+    <div class="column col-8 entry-content flex-col">
       <div class="flex-auto flex-col" v-if="current.entry">
         <div class="columns">
           <div class="column col-2">
@@ -29,13 +29,14 @@
             <button class="btn" @click="cancel">Cancel</button>
           </div>
         </div>
-        <blocks :entry="current.entry" :on-change="onChange"></blocks>
+        <blocks :entry="current.entry" @changed="onChange"></blocks>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue';
 import {Entries} from 'src/services/models';
 import Blocks from './Blocks';
 
@@ -81,7 +82,8 @@ export default {
       Entries.put(this.current.data.id, this.current.data)
       .then(entry => {
         const i = this.entries.indexOf(this.current.entry);
-        this.pick(this.entries[i] = entry);
+        Vue.set(this.entries, i, entry);
+        this.pick(entry);
       });
     },
     cancel() {
@@ -92,13 +94,13 @@ export default {
 </script>
 
 <style lang="less">
-.entry-manage {
+.entry-list {
   height: 100vh;
   > * {
     overflow: auto;
   }
 }
-.entry-list {
+.entry-content {
   background: white;
 }
 .entry-title {
